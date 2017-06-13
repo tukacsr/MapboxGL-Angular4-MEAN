@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core'
-import { Map, MapMouseEvent, NavigationControl } from 'mapbox-gl'
+import { Http } from '@angular/http'
 import { Router } from '@angular/router'
+import { Map, MapMouseEvent, NavigationControl } from 'mapbox-gl'
 
+import { CommentService } from '../../services/comment.service'
 import { MapService } from '../../services/map.service'
 
 import { Coords } from '../../models/coords'
@@ -14,19 +16,26 @@ import { Comment } from '../../models/comment'
 
 export class MapComponent implements OnInit {
   map: Map
+  comments: Comment[]
   coords: Coords
   data: Comment
   currentUser: string
   modal: HTMLElement
   showError: boolean
 
-  constructor(private mapService: MapService, private router: Router) { }
+  constructor(private mapService: MapService, private router: Router,private commentService: CommentService, private http: Http) { }
 
   ngOnInit() {
     this.currentUser = localStorage.getItem('currentUser')
     this.modal = document.getElementById('myModal')
     this.modal.style.display = 'none'
     this.showError = false
+
+    this.commentService.getComments()
+    .subscribe(data => {
+      this.comments = data
+      this.markerEvent();
+    })
 
     this.map = new Map({
       container: 'map',
@@ -42,6 +51,10 @@ export class MapComponent implements OnInit {
     this.map.on('load', () => {
       this.map.addControl(new NavigationControl())
 
+      for (let i=0; i<this.comments.length; i++) {
+        console.log(this.comments[i].comText)
+      }
+
       this.map.on('click', (e: MapMouseEvent) => {
         this.modal.style.display = 'block'
         this.coords = e.lngLat
@@ -54,8 +67,9 @@ export class MapComponent implements OnInit {
       this.showError = true
     } else {
 
-      this.data = {user: this.currentUser, comment: comment.value, lat: this.coords.lat, lng: this.coords.lng}
-      console.log(this.data)
+      this.data = {user: this.currentUser, comText: comment.value, lat: this.coords.lat, lng: this.coords.lng}
+      this.commentService.createComment(this.data)
+      .subscribe(data => { })
 
       comment.value = ''
       this.modal.style.display = 'none'

@@ -9,6 +9,10 @@ import { MapComponent } from './components/map/map.component'
 import { routing } from './app.routes'
 
 import { MapService } from './services/map.service'
+import { CommentService } from './services/comment.service'
+
+import 'rxjs/add/operator/map'
+import 'rxjs/add/operator/catch'
 
 @NgModule({
   declarations: [
@@ -23,7 +27,8 @@ import { MapService } from './services/map.service'
     routing
   ],
   providers: [
-    MapService
+    MapService,
+    CommentService
   ],
   bootstrap: [AppComponent]
 })

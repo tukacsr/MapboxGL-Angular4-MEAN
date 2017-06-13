@@ -1,6 +1,8 @@
 export class Comment {
   user: string;
-  comment: string;
+  comText: string;
   lat: number;
-  lng: number
+  lng: number;
+  __v?:number;
+  _id?:string
 }
