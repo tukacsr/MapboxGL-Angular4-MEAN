@@ -1,18 +1,43 @@
 <div id="map"></div>
 
-<button class="btn btn-lg btn-block btn-primary" (click)="logOut()"> Log out </button>
+<button id="logout" class="btn btn-lg btn-block btn-primary" (click)="logOut()"> Log out </button>
 
-<div id="myModal" class="modal">
-  <div class="modal-content" style="width:50%">
-    <textarea placeholder="Your comment" rows="10" style="width: 100%" #comment> </textarea>
+<div class="modal" *ngIf="showModal">
+  <div class="modal-content">
+    <div *ngIf='clicked' style="height: 300px; overflow:scroll">
+      <div class="col-sm-4">
+        <ul class="list-group">
+          <li *ngFor="let user of listUser" class="list-group-item" style="word-wrap: break-word; text-align: justify">
+            {{ user }}
+          </li>
+        </ul>
+      </div>
+      <div class="col-sm-8">
+        <ul class="list-group">
+          <li *ngFor="let comment of listComment" class="list-group-item" style="word-wrap: break-word; text-align: justify">
+            {{ comment }}
+          </li>
+        </ul>
+      </div>
+    </div>
+    <textarea [(ngModel)]="myText" placeholder="Your comment ✉" rows="10" style="width: 100%"> </textarea>
     <div *ngIf="showError"> Please provide us a comment </div>
     <div style="text-align:center;">
-      <button class="btn btn-sm btn-block btn-success" (click)="send(comment)">
+      <button *ngIf='!clicked' class="btn btn-sm btn-block btn-success" (click)="newMarker()">
         OK
       </button>
-      <button class="btn btn-sm btn-block btn-danger" (click)="close(comment)">
+      <button *ngIf='clicked' class="btn btn-sm btn-block btn-success" (click)="newComment()">
+        OK
+      </button>
+      <button class="btn btn-sm btn-block btn-danger" (click)="close()">
         Cancel
       </button>
     </div>
+  </div>
+</div>
+
+<div style="position: absolute; right: 30px; top: 70px; width: 100px; text-align: center; background-color: aliceblue; word-wrap: break-word; overflow:auto">
+  <div class="modal-content" style="width:100%">
+    {{ currentUser }}
   </div>
 </div>

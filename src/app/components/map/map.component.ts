@@ -1,85 +1,178 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit, AfterContentInit, ViewEncapsulation } from '@angular/core'
 import { Http } from '@angular/http'
 import { Router } from '@angular/router'
-import { Map, MapMouseEvent, NavigationControl } from 'mapbox-gl'
+import { Map, Marker, MapMouseEvent } from 'mapbox-gl'
 
-import { CommentService } from '../../services/comment.service'
 import { MapService } from '../../services/map.service'
+import { CommentService } from '../../services/comment.service'
+import { MarkerService } from '../../services/marker.service'
 
-import { Coords } from '../../models/coords'
 import { Comment } from '../../models/comment'
 
 @Component({
+  encapsulation: ViewEncapsulation.None,
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss']
 })
 
 export class MapComponent implements OnInit {
-  map: Map
-  comments: Comment[]
-  coords: Coords
-  data: Comment
   currentUser: string
+  marker: Marker
+  coords
+  markerId: number
+  data: Comment
+  comments: Comment[]
   modal: HTMLElement
   showError: boolean
+  showModal: boolean
+  listComment: Array<String>
+  listUser: Array<String>
+  clicked: boolean
+  myText: string
+  thisMarker:string
+  divId:string
+  newCom
 
-  constructor(private mapService: MapService, private router: Router,private commentService: CommentService, private http: Http) { }
+  constructor(
+    private mapService: MapService,
+    private markerService: MarkerService,
+    private router: Router,
+    private commentService: CommentService,
+    private http: Http
+  ) { }
 
   ngOnInit() {
     this.currentUser = localStorage.getItem('currentUser')
-    this.modal = document.getElementById('myModal')
-    this.modal.style.display = 'none'
     this.showError = false
+    this.showModal = false
+    this.clicked = false
+    this.myText = ''
 
-    this.commentService.getComments()
-    .subscribe(data => {
-      this.comments = data
-      this.markerEvent();
-    })
-
-    this.map = new Map({
+    const map = new Map({
       container: 'map',
       style: 'mapbox://styles/mapbox/light-v9',
       zoom: 5,
-      center: [-70.880453, 40.897852]
+      center: [19.0402, 47.4979]
     })
 
-    this.markerEvent();
+    this.mapService.map = map
+
+    this.markerService.loadMarkers()
+
+    this.commentService.getComments()
+      .subscribe(data => {
+        this.comments = data
+        this.markerId = this.comments.length
+      })
+
+    this.markerEvent()
   }
 
   markerEvent() {
-    this.map.on('load', () => {
-      this.map.addControl(new NavigationControl())
+    this.mapService.map.on('load', () => {
 
-      for (let i=0; i<this.comments.length; i++) {
-        console.log(this.comments[i].comText)
-      }
+      this.mapService.map.on('click', (e) => {
+        if (e.originalEvent.path[0].id.substring(0, 6) === 'marker') {
+          this.clicked = true
 
-      this.map.on('click', (e: MapMouseEvent) => {
-        this.modal.style.display = 'block'
-        this.coords = e.lngLat
-      });
-    });
+          this.divId = e.originalEvent.path[0].attributes[0].value
+
+          let count = 0
+          this.listComment = []
+          this.listUser = []
+          for (let i = 0; i < this.comments.length; i++) {
+            if (this.divId === this.comments[i].markerId) {
+                this.listComment[count] = this.comments[i].comText
+                this.listUser[count] = this.comments[i].user
+                count++
+            }
+          }
+
+          this.showModal = true
+        } else {
+          this.clicked = false
+          this.showModal = true
+          this.coords = e.lngLat
+        }
+      })
+    })
   }
 
-  send(comment) {
-    if (comment.value === '') {
+  newMarker() {
+    if (this.myText === '') {
       this.showError = true
     } else {
+      const el = document.createElement('div')
+      el.id = `marker-${this.markerId}`
+      el.style.backgroundImage =
+      `url('http://2015.thefriendshipexpress.org/wp-content/uploads/2014/03/Map-Marker-Marker-Outside-Pink-icon.png')`
+      el.style.backgroundSize = 'cover'
+      el.style.width = '32px'
+      el.style.height = '32px'
+      el.style.cursor = 'pointer'
 
-      this.data = {user: this.currentUser, comText: comment.value, lat: this.coords.lat, lng: this.coords.lng}
+      const marker:Marker = new Marker(el, {offset:[-16, -32]})
+        .setLngLat(this.coords)
+        .addTo(this.mapService.map)
+
+      this.data = {
+        markerId: `marker-${this.markerId}`,
+        user: this.currentUser,
+        comText: this.myText,
+        lat: this.coords.lat,
+        lng: this.coords.lng
+      }
+
+      this.markerId++
+
       this.commentService.createComment(this.data)
-      .subscribe(data => { })
+        .subscribe(data => {
+          this.commentService.getComments()
+            .subscribe(data => {
+              this.comments = data
+            })
+        })
 
-      comment.value = ''
-      this.modal.style.display = 'none'
+      this.myText = ''
+      this.showModal = false
     }
   }
 
-  close(comment) {
-    comment.value = ''
-    this.modal.style.display = 'none'
-    this.showError = false;
+  newComment() {
+    if (this.myText === '') {
+      this.showError = true
+    } else {
+      for (let i = 0; i < this.comments.length; i++) {
+        if (this.divId === this.comments[i].markerId) {
+          this.newCom = this.comments[i]
+        }
+      }
+    }
+
+    this.data = {
+      markerId: this.newCom.markerId,
+      user: this.currentUser,
+      comText: this.myText,
+      lat: this.newCom.lat,
+      lng: this.newCom.lng
+    }
+
+    this.commentService.createComment(this.data)
+        .subscribe(data => {
+          this.commentService.getComments()
+            .subscribe(data => {
+              this.comments = data
+            })
+        })
+
+      this.myText = ''
+      this.showModal = false
+  }
+
+  close() {
+    this.myText = ''
+    this.showModal = false
+    this.showError = false
   }
 
   logOut() {

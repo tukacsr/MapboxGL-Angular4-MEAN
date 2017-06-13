@@ -13,11 +13,20 @@ body {
 
 .modal {
     padding-top: 100px;
-    overflow: auto
+    overflow: auto;
+    display: block
 }
 
 .modal-content {
     margin: auto;
     padding: 20px;
-    width: 80%
+    width: 60%
 }
+
+.markers {
+    background-image: url('../../../assets/marker.png')
+    backgroundSize = 'cover'
+    width = '32px'
+    height = '32px'
+    cursor = 'pointer'
+  }

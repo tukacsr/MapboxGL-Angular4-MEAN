@@ -10,9 +10,11 @@ import { routing } from './app.routes'
 
 import { MapService } from './services/map.service'
 import { CommentService } from './services/comment.service'
+import { MarkerService } from './services/marker.service'
 
 import 'rxjs/add/operator/map'
-import 'rxjs/add/operator/catch'
+import 'rxjs/add/operator/catch';
+
 
 @NgModule({
   declarations: [
@@ -28,7 +30,8 @@ import 'rxjs/add/operator/catch'
   ],
   providers: [
     MapService,
-    CommentService
+    CommentService,
+    MarkerService
   ],
   bootstrap: [AppComponent]
 })

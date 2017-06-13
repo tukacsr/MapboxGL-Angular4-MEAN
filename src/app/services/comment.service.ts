@@ -7,24 +7,22 @@ import { Comment } from '../models/comment'
 
 @Injectable()
 export class CommentService {
-  private usersUrl:string = 'http://localhost:3001/api/comments'
+  private commentsUrl = 'http://localhost:3001/api/comments'
   constructor(private http: Http) { }
 
-  // Get users *************************
   getComments(): Observable<Comment[]> {
-    return this.http.get(this.usersUrl)
+    return this.http.get(this.commentsUrl)
     .map(res => res.json())
     .catch(this.handleError)
   }
 
-  // Get single user ************************
  createComment(comment): Observable<Comment> {
-    return this.http.post(this.usersUrl, comment)
+    console.log(comment)
+    return this.http.post(this.commentsUrl, comment)
     .map(res => res.json())
     .catch(this.handleError)
   }
 
-  // Handle any errors from API *****************
   private handleError(err) {
     let errMessage:string
     if (err instanceof Response) {
