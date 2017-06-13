@@ -103,8 +103,13 @@ export class MapComponent implements OnInit {
       this.showError = true
     } else {
       const el = document.createElement('div')
-      el.className = 'markers'
       el.id = `marker-${this.markerId}`
+      el.style.backgroundImage =
+      `url('http://2015.thefriendshipexpress.org/wp-content/uploads/2014/03/Map-Marker-Marker-Outside-Pink-icon.png')`
+      el.style.backgroundSize = 'cover'
+      el.style.width = '32px'
+      el.style.height = '32px'
+      el.style.cursor = 'pointer'
 
       const marker:Marker = new Marker(el, {offset:[-16, -32]})
         .setLngLat(this.coords)

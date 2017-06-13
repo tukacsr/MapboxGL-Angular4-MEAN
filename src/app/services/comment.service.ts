@@ -17,7 +17,6 @@ export class CommentService {
   }
 
  createComment(comment): Observable<Comment> {
-    console.log(comment)
     return this.http.post(this.commentsUrl, comment)
     .map(res => res.json())
     .catch(this.handleError)

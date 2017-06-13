@@ -10,7 +10,7 @@ Further development is possible with the Mapbox-GL API.
 
 1. Install Mongodb
 2. Create a database on mLab.com and change the test database to yours in `server.js`
-3. Run `node server.js` to start the API on `http://localhost:3001/`
+3. Run `node server.js` to start the API on `http://localhost:3001/api/comments`
 4. Run `ng serve` to run the application on `http://localhost:4200/`
 
 
