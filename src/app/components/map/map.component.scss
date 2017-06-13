@@ -1,0 +1,23 @@
+body {
+    margin: 0;
+    padding: 0
+}
+
+#map {
+    position:absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    margin-top: 50px
+}
+
+.modal {
+    padding-top: 100px;
+    overflow: auto
+}
+
+.modal-content {
+    margin: auto;
+    padding: 20px;
+    width: 80%
+}

@@ -1,0 +1,18 @@
+<div id="map"></div>
+
+<button class="btn btn-lg btn-block btn-primary" (click)="logOut()"> Log out </button>
+
+<div id="myModal" class="modal">
+  <div class="modal-content" style="width:50%">
+    <textarea placeholder="Your comment" rows="10" style="width: 100%" #comment> </textarea>
+    <div *ngIf="showError"> Please provide us a comment </div>
+    <div style="text-align:center;">
+      <button class="btn btn-sm btn-block btn-success" (click)="send(comment)">
+        OK
+      </button>
+      <button class="btn btn-sm btn-block btn-danger" (click)="close(comment)">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+<form #login="ngForm" (ngSubmit)="toMap()">
+  <div class="form-group" [ngClass]="{'has-error': user.invalid && user.touched}">
+    <input type="text" placeholder="Username" class="form-control" name="user" required
+      [(ngModel)]="myName" #user="ngModel">
+      <span class="help-block" *ngIf="user.invalid && user.touched">
+        Please submit your username
+      </span>
+  </div>
+  <button type="submit" class="btn btn-lg btn-block btn-primary" [disabled]="login.invalid">
+    OK
+  </button>
+</form>
